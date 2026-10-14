@@ -23,7 +23,7 @@ export default function Logo({
 }) {
   return (
     <span className={`inline-flex items-center ${className}`}>
-      <LogoMark height={36} />
+      <LogoMark height={52} />
     </span>
   );
 }

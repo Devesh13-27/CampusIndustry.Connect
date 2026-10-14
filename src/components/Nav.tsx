@@ -58,7 +58,7 @@ export default function Nav({
     <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/90 shadow-sm shadow-slate-900/[0.03] backdrop-blur-md">
       <div className="h-0.5 bg-gradient-to-r from-blue-500 via-blue-400 to-blue-600" />
 
-      <div className="mx-auto flex min-h-14 w-full max-w-6xl items-center justify-between gap-3 px-4 sm:min-h-16 sm:px-6">
+      <div className="mx-auto flex min-h-20 w-full max-w-6xl items-center justify-between gap-3 px-4 sm:min-h-24 sm:px-6">
         {/* Brand + desktop navigation */}
         <div className="flex min-w-0 items-center gap-5 sm:gap-8">
           <Link

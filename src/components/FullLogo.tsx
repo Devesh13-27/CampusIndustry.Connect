@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function FullLogo({
   className = "",
-  size = "w-32 sm:w-40",
+  size = "w-56 sm:w-80",
 }: {
   className?: string;
   size?: string;
