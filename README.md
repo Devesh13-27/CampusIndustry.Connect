@@ -39,6 +39,19 @@ schedule loop.
    ```
    From then on, log in and use `/admin` to approve every new signup.
 
+### Password recovery
+
+Add these URLs under Supabase **Authentication → URL Configuration → Redirect
+URLs**:
+
+```text
+http://localhost:3000/reset-password
+https://your-deployed-domain.com/reset-password
+```
+
+The login page links to `/forgot-password`. Supabase sends the recovery email
+to `/reset-password`, where the user can choose a new password.
+
 ## How verification works
 
 Signup requires an official (non-freemail) email address. The domain is
