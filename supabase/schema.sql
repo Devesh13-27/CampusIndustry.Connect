@@ -1,4 +1,4 @@
--- Bridge Careers — core schema
+-- CampusIndustry.Connect — core schema
 -- Run this in the Supabase SQL editor (or via `supabase db push`) on a fresh project.
 
 create extension if not exists "pgcrypto";

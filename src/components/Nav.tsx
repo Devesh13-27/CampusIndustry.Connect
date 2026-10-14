@@ -63,7 +63,7 @@ export default function Nav({
         <div className="flex min-w-0 items-center gap-5 sm:gap-8">
           <Link
             href="/"
-            aria-label="Bridge Careers home"
+            aria-label="CampusIndustry.Connect home"
             className="shrink-0 rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
           >
             <Logo textClassName="hidden sm:inline" />

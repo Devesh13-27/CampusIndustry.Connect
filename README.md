@@ -1,4 +1,4 @@
-# Bridge Careers
+# CampusIndustry.Connect
 
 A private, invite-only portal connecting company HR teams and college
 Training & Placement (T&P) officers — post openings, report interest,

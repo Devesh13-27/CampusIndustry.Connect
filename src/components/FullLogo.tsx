@@ -11,13 +11,13 @@ export default function FullLogo({
     <div
       className={`relative overflow-hidden ${size} ${className}`}
       role="img"
-      aria-label="Bridge Careers"
+      aria-label="CampusIndustry.Connect"
     >
       <Image
         src="/brand/logo-full.png"
         alt=""
-        width={1086}
-        height={587}
+        width={372}
+        height={378}
         priority
         className="h-auto w-full"
       />
