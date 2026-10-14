@@ -3,7 +3,7 @@
 import { useEffect, useId, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import Logo from "./Logo";
+import Image from "next/image";
 import LogoutButton from "./LogoutButton";
 
 
@@ -55,7 +55,21 @@ export default function Nav({
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/90 shadow-sm shadow-slate-900/[0.03] backdrop-blur-md">
+    <>
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-0 z-0 flex items-center justify-center overflow-hidden"
+      >
+        <Image
+          src="/brand/logo-full.png"
+          alt=""
+          width={768}
+          height={768}
+          className="w-[min(72vw,48rem)] opacity-[0.055] blur-[7px]"
+        />
+      </div>
+
+      <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/90 shadow-sm shadow-slate-900/[0.03] backdrop-blur-md">
       <div className="h-0.5 bg-gradient-to-r from-blue-500 via-blue-400 to-blue-600" />
 
       <div className="mx-auto flex min-h-20 w-full max-w-6xl items-center justify-between gap-3 px-4 sm:min-h-24 sm:px-6">
@@ -64,9 +78,9 @@ export default function Nav({
           <Link
             href="/"
             aria-label="CampusIndustry.Connect home"
-            className="shrink-0 rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+            className="shrink-0 rounded-md px-1 py-2 text-lg font-bold tracking-tight text-slate-950 transition-opacity hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 sm:text-xl"
           >
-            <Logo textClassName="hidden sm:inline" />
+            CampusIndustry<span className="text-orange-500">.Connect</span>
           </Link>
 
           <nav
@@ -212,6 +226,7 @@ export default function Nav({
           </div>
         )}
       </div>
-    </header>
+      </header>
+    </>
   );
 }
