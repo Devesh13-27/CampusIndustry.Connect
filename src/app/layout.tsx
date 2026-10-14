@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Placement Bridge",
+  title: "Bridge Careers",
   description: "Private portal connecting company HR and college T&P officers.",
 };
 

@@ -1,4 +1,4 @@
--- Placement Bridge — core schema
+-- Bridge Careers — core schema
 -- Run this in the Supabase SQL editor (or via `supabase db push`) on a fresh project.
 
 create extension if not exists "pgcrypto";

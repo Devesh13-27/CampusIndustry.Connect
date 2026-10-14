@@ -8,13 +8,19 @@ export default function FullLogo({
   size?: string;
 }) {
   return (
-    <Image
-      src="/brand/logo-full.png"
-      alt="The Placement Bridge"
-      width={1086}
-      height={587}
-      priority
-      className={`h-auto ${size} ${className}`}
-    />
+    <div
+      className={`relative overflow-hidden ${size} ${className}`}
+      role="img"
+      aria-label="Bridge Careers"
+    >
+      <Image
+        src="/brand/logo-full.png"
+        alt=""
+        width={1086}
+        height={587}
+        priority
+        className="h-auto w-full"
+      />
+    </div>
   );
 }

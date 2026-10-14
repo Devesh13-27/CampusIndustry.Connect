@@ -30,7 +30,7 @@ export default function Logo({
         <span
           className={`text-base font-semibold tracking-tight text-slate-900 ${textClassName}`}
         >
-          The Placement Bridge
+          Bridge Careers
         </span>
       )}
     </span>

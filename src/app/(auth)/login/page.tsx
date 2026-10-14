@@ -92,7 +92,7 @@ export default function LoginPage() {
         />
 
         <p className="mt-1 text-sm text-slate-500">
-          Welcome back to Placement Bridge.
+          Welcome back to Bridge Careers.
         </p>
 
         <form onSubmit={handleSubmit} noValidate className="mt-6 space-y-4">
