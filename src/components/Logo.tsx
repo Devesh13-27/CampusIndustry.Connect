@@ -5,8 +5,8 @@ export function LogoMark({ height = 36 }: { height?: number }) {
     <Image
       src="/brand/logo-icon.png"
       alt=""
-      width={1007}
-      height={391}
+      width={265}
+      height={170}
       priority
       className="w-auto shrink-0"
       style={{ height }}
