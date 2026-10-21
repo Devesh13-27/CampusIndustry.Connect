@@ -16,8 +16,8 @@ export default function FullLogo({
       <Image
         src="/brand/logo-full.png"
         alt=""
-        width={372}
-        height={378}
+        width={768}
+        height={512}
         priority
         className="h-auto w-full"
       />

@@ -64,7 +64,7 @@ export default function Nav({
           src="/brand/logo-full.png"
           alt=""
           width={768}
-          height={768}
+          height={512}
           className="w-[min(72vw,48rem)] opacity-[0.055] blur-[7px]"
         />
       </div>

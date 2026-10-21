@@ -26,9 +26,9 @@ export default async function PendingPage() {
     profile.verification_status === "rejected" || org?.verification_status === "rejected";
 
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center px-4 py-10 sm:px-6 sm:py-12">
+    <div className="auth-page relative flex flex-col">
       <AuthBackdrop />
-      <FullLogo className="mb-2" />
+      <FullLogo className="auth-logo mb-1" size="" />
       <div className="card w-full max-w-md p-6 text-center sm:p-8">
         <div
           className={`mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full ${
