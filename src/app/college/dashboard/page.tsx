@@ -2,10 +2,9 @@ import { createClient } from "@/lib/supabase/server";
 import { requireVerifiedRole } from "@/lib/guards";
 import Nav from "@/components/Nav";
 import EmptyState from "@/components/EmptyState";
-import FadeInStagger from "@/components/reactbits/FadeInStagger";
 import StatCard from "@/components/StatCard";
 import Icon from "@/components/Icon";
-import ExpandablePostingCard from "./ExpandablePostingCard";
+import JobPostingFilters from "./JobPostingFilters";
 import type { Posting } from "@/lib/types";
 
 type PostingWithCompany = Posting & { companies: { name: string } | null };
@@ -39,6 +38,7 @@ export default async function CollegeDashboard() {
     .in("status", ["proposed", "confirmed"]);
 
   const interestMap = new Map((myInterests ?? []).map((r) => [r.posting_id, r]));
+  const interestByPosting = Object.fromEntries(interestMap);
   const totalInterestLogged = (myInterests ?? []).reduce((sum, r) => sum + r.interested_count, 0);
 
   return (
@@ -48,6 +48,7 @@ export default async function CollegeDashboard() {
         links={[
           { href: "/college/dashboard", label: "Job Postings" },
           { href: "/college/camps", label: "Recruitment Activities" },
+          { href: "/calendar", label: "Calendar" },
         ]}
       />
       <div className="mx-auto w-full max-w-6xl px-4 py-5 sm:px-6 sm:py-8">
@@ -96,11 +97,9 @@ export default async function CollegeDashboard() {
           />
         )}
 
-        <FadeInStagger className="space-y-3 sm:space-y-4">
-          {postings?.map((p) => (
-            <ExpandablePostingCard key={p.id} posting={p} mine={interestMap.get(p.id)} />
-          ))}
-        </FadeInStagger>
+        {!!postings?.length && (
+          <JobPostingFilters postings={postings} interestByPosting={interestByPosting} />
+        )}
       </div>
     </div>
   );

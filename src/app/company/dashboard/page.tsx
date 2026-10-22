@@ -45,7 +45,10 @@ export default async function CompanyDashboard() {
     <div>
       <Nav
         orgName={company?.name ?? ""}
-        links={[{ href: "/company/dashboard", label: "Postings" }]}
+        links={[
+          { href: "/company/dashboard", label: "Postings" },
+          { href: "/calendar", label: "Calendar" },
+        ]}
       />
       <div className="mx-auto w-full max-w-6xl px-4 py-5 sm:px-6 sm:py-8">
         {!!postings?.length && (

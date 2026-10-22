@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import LogoutButton from "./LogoutButton";
+import NotificationBell from "./NotificationBell";
 
 
 export default function Nav({
@@ -110,6 +111,8 @@ export default function Nav({
 
         {/* Account controls */}
         <div className="flex min-w-0 shrink-0 items-center gap-2 sm:gap-3">
+          <NotificationBell />
+
           <div
             className="flex min-w-0 items-center gap-2 rounded-full bg-slate-100 py-1 pl-1 pr-2 text-sm font-medium text-slate-700 sm:pr-3"
             title={orgName || "Account"}
