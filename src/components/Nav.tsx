@@ -62,7 +62,7 @@ export default function Nav({
         className="pointer-events-none fixed inset-0 z-0 flex items-center justify-center overflow-hidden"
       >
         <Image
-          src="/brand/logo-full.png"
+          src="/brand/logo-transparent.png"
           alt=""
           width={768}
           height={512}

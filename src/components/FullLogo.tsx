@@ -14,7 +14,7 @@ export default function FullLogo({
       aria-label="CampusIndustry.Connect"
     >
       <Image
-        src="/brand/logo-full.png"
+        src="/brand/logo-transparent.png"
         alt=""
         width={768}
         height={512}

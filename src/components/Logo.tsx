@@ -3,7 +3,7 @@ import Image from "next/image";
 export function LogoMark({ height = 36 }: { height?: number }) {
   return (
     <Image
-      src="/brand/logo-full.png"
+      src="/brand/logo-transparent.png"
       alt="CampusIndustry.Connect"
       width={768}
       height={512}
