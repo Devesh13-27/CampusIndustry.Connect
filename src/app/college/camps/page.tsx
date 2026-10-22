@@ -70,7 +70,7 @@ export default async function CollegeCampsPage() {
                 <span className="text-sm font-medium text-slate-600">
                   {CAMP_STATUS_LABEL[c.status]}
                 </span>
-                {["proposed", "confirmed"].includes(c.status) && (
+                {(c.status === "proposed" || c.status === "confirmed") && (
                   <ConfirmButton campId={c.id} status={c.status} />
                 )}
               </div>
