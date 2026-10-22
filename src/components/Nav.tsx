@@ -73,13 +73,13 @@ export default function Nav({
       <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/90 shadow-sm shadow-slate-900/[0.03] backdrop-blur-md">
       <div className="h-0.5 bg-gradient-to-r from-blue-500 via-blue-400 to-blue-600" />
 
-      <div className="mx-auto flex min-h-20 w-full max-w-6xl items-center justify-between gap-3 px-4 sm:min-h-24 sm:px-6">
+      <div className="mx-auto flex min-h-20 w-full max-w-6xl items-center justify-between gap-2 px-3 sm:min-h-24 sm:gap-3 sm:px-6">
         {/* Brand + desktop navigation */}
-        <div className="flex min-w-0 items-center gap-5 sm:gap-8">
+        <div className="flex min-w-0 flex-1 items-center gap-3 sm:flex-initial sm:gap-8">
           <Link
             href="/"
             aria-label="CampusIndustry.Connect home"
-            className="shrink-0 rounded-md px-1 py-2 text-lg font-bold tracking-tight text-slate-950 transition-opacity hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 sm:text-xl"
+            className="min-w-0 flex-1 whitespace-nowrap rounded-md px-1 py-2 text-[11px] font-bold tracking-tight text-slate-950 transition-opacity hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 sm:flex-initial sm:text-xl"
           >
             CampusIndustry<span className="text-orange-500">.Connect</span>
           </Link>
@@ -110,11 +110,11 @@ export default function Nav({
         </div>
 
         {/* Account controls */}
-        <div className="flex min-w-0 shrink-0 items-center gap-2 sm:gap-3">
+        <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
           <NotificationBell />
 
           <div
-            className="flex min-w-0 items-center gap-2 rounded-full bg-slate-100 py-1 pl-1 pr-2 text-sm font-medium text-slate-700 sm:pr-3"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 p-1 text-sm font-medium text-slate-700 sm:h-auto sm:w-auto sm:justify-start sm:gap-2 sm:py-1 sm:pl-1 sm:pr-3"
             title={orgName || "Account"}
           >
             <span

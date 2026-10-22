@@ -66,13 +66,32 @@ export async function sendMessageAsTp(
 }
 
 export async function confirmCamp(campId: string): Promise<ActionResult> {
-  await requireVerifiedRole("tp");
+  const profile = await requireVerifiedRole("tp");
   const supabase = await createClient();
 
   const { error } = await supabase
     .from("camps_visits")
     .update({ status: "confirmed" })
-    .eq("id", campId);
+    .eq("id", campId)
+    .eq("college_id", profile.college_id)
+    .eq("status", "proposed");
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath("/college/camps");
+  return { success: true };
+}
+
+export async function cancelCamp(campId: string): Promise<ActionResult> {
+  const profile = await requireVerifiedRole("tp");
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("camps_visits")
+    .update({ status: "cancelled" })
+    .eq("id", campId)
+    .eq("college_id", profile.college_id)
+    .in("status", ["proposed", "confirmed"]);
 
   if (error) return { success: false, error: error.message };
 

@@ -148,3 +148,22 @@ export async function proposeCamp(
   revalidatePath(`/company/postings/${postingId}`);
   return { success: true };
 }
+
+export async function cancelCamp(campId: string, postingId: string): Promise<ActionResult> {
+  const profile = await requireVerifiedRole("hr");
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("camps_visits")
+    .update({ status: "cancelled" })
+    .eq("id", campId)
+    .eq("posting_id", postingId)
+    .eq("company_id", profile.company_id)
+    .in("status", ["proposed", "confirmed"]);
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath(`/company/postings/${postingId}`);
+  revalidatePath("/company/dashboard");
+  return { success: true };
+}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { sendMessageAsHr, proposeCamp } from "@/app/company/actions";
+import { cancelCamp, sendMessageAsHr, proposeCamp } from "@/app/company/actions";
 import { CAMP_STATUS_LABEL } from "@/lib/statusStyles";
 import type { Message, CampVisit } from "@/lib/types";
 
@@ -118,6 +118,19 @@ export default function ThreadPanel({
     });
   }
 
+  function handleCancelCamp() {
+    if (!camp || !window.confirm("Cancel this camp or visit?")) return;
+    setCampError(null);
+    startTransition(async () => {
+      const result = await cancelCamp(camp.id, postingId);
+      if (!result.success) {
+        setCampError(result.error);
+        return;
+      }
+      setCampSaved(true);
+    });
+  }
+
   return (
     <div className="card flex h-full min-h-[500px] flex-col overflow-hidden">
       <div className="flex items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/50 p-3">
@@ -140,9 +153,21 @@ export default function ThreadPanel({
       </div>
 
       {camp && (
-        <div className="border-b border-slate-200 bg-blue-50 px-3 py-2 text-sm text-blue-800">
-          {camp.type === "camp" ? "Recruitment camp" : "Industry visit"} on{" "}
-          {camp.scheduled_date} — {CAMP_STATUS_LABEL[camp.status]}
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 bg-blue-50 px-3 py-2 text-sm text-blue-800">
+          <span>
+            {camp.type === "camp" ? "Recruitment camp" : "Industry visit"} on{" "}
+            {camp.scheduled_date} — {CAMP_STATUS_LABEL[camp.status]}
+          </span>
+          {["proposed", "confirmed"].includes(camp.status) && (
+            <button
+              type="button"
+              onClick={handleCancelCamp}
+              disabled={isPending}
+              className="rounded-md border border-red-200 bg-white px-2.5 py-1 text-xs font-semibold text-red-600 hover:bg-red-50 disabled:opacity-50"
+            >
+              Cancel
+            </button>
+          )}
         </div>
       )}
 

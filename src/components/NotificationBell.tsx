@@ -43,8 +43,14 @@ export default function NotificationBell() {
     window.localStorage.setItem("campus-connect-read-notifications", JSON.stringify(ids));
   }
 
+  function markRead(id: string) {
+    const nextReadIds = readIds.includes(id) ? readIds : [...readIds, id];
+    setReadIds(nextReadIds);
+    window.localStorage.setItem("campus-connect-read-notifications", JSON.stringify(nextReadIds));
+  }
+
   return (
-    <div className="relative">
+    <div className="relative shrink-0">
       <button
         type="button"
         onClick={() => {
@@ -75,10 +81,10 @@ export default function NotificationBell() {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-12 z-50 w-[min(22rem,calc(100vw-2rem))] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl">
+        <div className="fixed left-2 right-2 top-[4.75rem] z-50 max-h-[calc(100dvh-5.5rem)] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl sm:absolute sm:left-auto sm:right-0 sm:top-12 sm:max-h-none sm:w-[min(22rem,calc(100vw-2rem))]">
           <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
             <h2 className="text-sm font-semibold text-slate-900">Notifications</h2>
-            <button type="button" onClick={markAllRead} className="text-xs font-medium text-blue-600 hover:text-blue-800">
+            <button type="button" onClick={markAllRead} className="btn-ghost min-h-8 px-2 text-xs text-blue-600 hover:text-blue-800">
               Mark all read
             </button>
           </div>
@@ -89,15 +95,21 @@ export default function NotificationBell() {
               </p>
             )}
             {notifications.map((item) => (
-              <Link
-                key={item.id}
-                href={item.href}
-                onClick={() => setOpen(false)}
-                className="block border-b border-slate-100 px-4 py-3 transition-colors hover:bg-slate-50"
-              >
-                <p className="text-sm font-medium text-slate-900">{item.title}</p>
-                <p className="mt-0.5 text-xs leading-5 text-slate-500">{item.message}</p>
-              </Link>
+              <div key={item.id} className="border-b border-slate-100 px-4 py-3 transition-colors hover:bg-slate-50">
+                <Link href={item.href} onClick={() => setOpen(false)} className="block min-w-0">
+                  <p className="break-words text-sm font-medium text-slate-900">{item.title}</p>
+                  <p className="mt-0.5 break-words text-xs leading-5 text-slate-500">{item.message}</p>
+                </Link>
+                {!readIds.includes(item.id) && (
+                  <button
+                    type="button"
+                    onClick={() => markRead(item.id)}
+                    className="mt-2 text-xs font-semibold text-blue-600 hover:text-blue-800"
+                  >
+                    Mark as read
+                  </button>
+                )}
+              </div>
             ))}
           </div>
         </div>
