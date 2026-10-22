@@ -78,21 +78,6 @@ body {
     "Segoe UI",
     sans-serif;
 
-  background-image:
-    radial-gradient(
-      700px circle at 0% 0%,
-      oklch(0.7 0.14 250 / 12%),
-      transparent 60%
-    ),
-    radial-gradient(
-      800px circle at 100% 0%,
-      oklch(0.75 0.12 220 / 10%),
-      transparent 55%
-    );
-
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-
 }
 
 /* ─────────────────────────────────────────
