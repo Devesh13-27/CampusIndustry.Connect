@@ -133,7 +133,7 @@ export default async function CompanyPostingDetail({
             ))}
           </div>
 
-          <div className="md:col-span-3">
+          <div className="min-h-0 md:col-span-3">
             {selectedCollegeId ? (
               <ThreadPanel
                 postingId={posting.id}

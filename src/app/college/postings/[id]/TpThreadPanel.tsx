@@ -117,7 +117,7 @@ export default function TpThreadPanel({
 
   return (
     <div
-      className="card flex h-full min-h-[500px] flex-col overflow-hidden"
+      className="card flex h-full min-h-[500px] max-h-[600px] flex-col overflow-hidden"
       aria-busy={isPending}
     >
       <div className="border-b border-slate-200 bg-slate-50/50 p-3">
@@ -174,7 +174,7 @@ export default function TpThreadPanel({
         </p>
       )}
 
-      <div className="flex-1 space-y-3 overflow-y-auto p-4">
+      <div className="min-h-0 flex-1 space-y-3 overflow-y-auto p-4">
         {!messages.length && (
           <p className="text-sm text-slate-400">
             No messages yet — say hello.

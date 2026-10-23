@@ -103,7 +103,7 @@ export default async function CollegePostingDetail({
             <InterestForm postingId={posting.id} existing={myInterest} />
           </div>
 
-          <div className="md:col-span-3">
+          <div className="min-h-0 md:col-span-3">
             <TpThreadPanel
               postingId={posting.id}
               collegeId={profile.college_id}

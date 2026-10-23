@@ -129,7 +129,7 @@ export default function ThreadPanel({
   }
 
   return (
-    <div className="card flex h-full min-h-[500px] flex-col overflow-hidden">
+    <div className="card flex h-full min-h-[500px] max-h-[600px] flex-col overflow-hidden">
       <div className="flex items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/50 p-3">
         <h3 className="min-w-0 truncate font-medium text-slate-900">
           {collegeName}
@@ -235,7 +235,7 @@ export default function ThreadPanel({
         </p>
       )}
 
-      <div className="flex-1 space-y-3 overflow-y-auto p-4">
+      <div className="min-h-0 flex-1 space-y-3 overflow-y-auto p-4">
         {!messages.length && (
           <p className="text-sm text-slate-400">
             No messages yet — say hello.
