@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Message } from "@/lib/types";
 
@@ -13,6 +13,23 @@ export function useRealtimeMessages(
 ) {
   const [messages, setMessages] = useState(initialMessages);
   const [realtimeError, setRealtimeError] = useState<string | null>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const container = messagesContainerRef.current;
+    if (!container) return;
+
+    const distanceFromBottom =
+      container.scrollHeight - container.scrollTop - container.clientHeight;
+    const shouldFollowLatest = distanceFromBottom < 120;
+
+    if (shouldFollowLatest) {
+      container.scrollTo({
+        top: container.scrollHeight,
+        behavior: initialMessages.length ? "smooth" : "auto",
+      });
+    }
+  }, [messages.length, initialMessages.length]);
 
   useEffect(() => {
     const supabase = createClient();
@@ -83,5 +100,10 @@ export function useRealtimeMessages(
     };
   }, [postingId, collegeId]);
 
-  return { messages, setMessages, realtimeError };
+  return {
+    messages,
+    setMessages,
+    realtimeError,
+    messagesContainerRef,
+  };
 }

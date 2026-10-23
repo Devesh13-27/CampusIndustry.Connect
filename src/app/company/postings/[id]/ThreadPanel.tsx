@@ -21,11 +21,12 @@ export default function ThreadPanel({
   initialMessages: Message[];
   camp: CampVisit | null;
 }) {
-  const { messages, setMessages, realtimeError } = useRealtimeMessages(
-    postingId,
-    collegeId,
-    initialMessages,
-  );
+  const {
+    messages,
+    setMessages,
+    realtimeError,
+    messagesContainerRef,
+  } = useRealtimeMessages(postingId, collegeId, initialMessages);
   const [text, setText] = useState("");
   const [isPending, startTransition] = useTransition();
   const [showCampForm, setShowCampForm] = useState(false);
@@ -235,7 +236,10 @@ export default function ThreadPanel({
         </p>
       )}
 
-      <div className="min-h-0 flex-1 space-y-3 overflow-y-auto p-4">
+      <div
+        ref={messagesContainerRef}
+        className="min-h-0 flex-1 space-y-3 overflow-y-auto scroll-smooth p-4"
+      >
         {!messages.length && (
           <p className="text-sm text-slate-400">
             No messages yet — say hello.
