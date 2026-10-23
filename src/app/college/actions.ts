@@ -3,8 +3,12 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { requireVerifiedRole } from "@/lib/guards";
+import type { Message } from "@/lib/types";
 
 type ActionResult = { success: true } | { success: false; error: string };
+type MessageActionResult =
+  | { success: true; message: Message }
+  | { success: false; error: string };
 
 export async function upsertInterest(
   postingId: string,
@@ -44,25 +48,30 @@ export async function sendMessageAsTp(
   postingId: string,
   companyId: string,
   body: string,
-): Promise<ActionResult> {
+): Promise<MessageActionResult> {
   if (!body.trim()) return { success: false, error: "Message cannot be empty." };
 
   const profile = await requireVerifiedRole("tp");
   const supabase = await createClient();
 
-  const { error } = await supabase.from("messages").insert({
-    posting_id: postingId,
-    college_id: profile.college_id,
-    company_id: companyId,
-    sender_id: profile.id,
-    sender_role: "tp",
-    body: body.trim(),
-  });
+  const { data, error } = await supabase
+    .from("messages")
+    .insert({
+      posting_id: postingId,
+      college_id: profile.college_id,
+      company_id: companyId,
+      sender_id: profile.id,
+      sender_role: "tp",
+      body: body.trim(),
+    })
+    .select()
+    .single();
 
   if (error) return { success: false, error: error.message };
+  if (!data) return { success: false, error: "Unable to read the sent message." };
 
   revalidatePath(`/college/postings/${postingId}`);
-  return { success: true };
+  return { success: true, message: data as Message };
 }
 
 export async function confirmCamp(campId: string): Promise<ActionResult> {

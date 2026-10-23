@@ -5,19 +5,26 @@ import { sendMessageAsTp, confirmCamp } from "@/app/college/actions";
 import { CAMP_STATUS_LABEL } from "@/lib/statusStyles";
 import { formatDate } from "@/lib/utils";
 import type { Message, CampVisit } from "@/lib/types";
+import { useRealtimeMessages } from "@/lib/use-realtime-messages";
 
 export default function TpThreadPanel({
   postingId,
+  collegeId,
   companyId,
   initialMessages,
   camp,
 }: {
   postingId: string;
+  collegeId: string;
   companyId: string;
   initialMessages: Message[];
   camp: CampVisit | null;
 }) {
-  const [messages, setMessages] = useState(initialMessages);
+  const { messages, setMessages, realtimeError } = useRealtimeMessages(
+    postingId,
+    collegeId,
+    initialMessages,
+  );
   const [text, setText] = useState("");
   const [isPending, startTransition] = useTransition();
   const [sendError, setSendError] = useState<string | null>(null);
@@ -56,7 +63,18 @@ export default function TpThreadPanel({
           );
           setText(body);
           setSendError(result.error);
+          return;
         }
+
+        setMessages((prev) => {
+          if (prev.some((message) => message.id === result.message.id)) {
+            return prev.filter((message) => message.id !== optimistic.id);
+          }
+
+          return prev.map((message) =>
+            message.id === optimistic.id ? result.message : message,
+          );
+        });
       } catch {
         setMessages((prev) =>
           prev.filter((m) => m.id !== optimistic.id),
@@ -138,6 +156,15 @@ export default function TpThreadPanel({
           className="border-b border-red-100 bg-red-50 px-3 py-2 text-sm text-red-700"
         >
           {confirmError}
+        </p>
+      )}
+
+      {realtimeError && (
+        <p
+          role="status"
+          className="border-b border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800"
+        >
+          {realtimeError}
         </p>
       )}
 

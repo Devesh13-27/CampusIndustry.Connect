@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { cancelCamp, sendMessageAsHr, proposeCamp } from "@/app/company/actions";
 import { CAMP_STATUS_LABEL } from "@/lib/statusStyles";
+import { useRealtimeMessages } from "@/lib/use-realtime-messages";
 import type { Message, CampVisit } from "@/lib/types";
 
 export default function ThreadPanel({
@@ -20,7 +21,11 @@ export default function ThreadPanel({
   initialMessages: Message[];
   camp: CampVisit | null;
 }) {
-  const [messages, setMessages] = useState(initialMessages);
+  const { messages, setMessages, realtimeError } = useRealtimeMessages(
+    postingId,
+    collegeId,
+    initialMessages,
+  );
   const [text, setText] = useState("");
   const [isPending, startTransition] = useTransition();
   const [showCampForm, setShowCampForm] = useState(false);
@@ -54,19 +59,11 @@ export default function ThreadPanel({
           return;
         }
 
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: crypto.randomUUID(),
-            posting_id: postingId,
-            college_id: collegeId,
-            company_id: companyId,
-            sender_id: "me",
-            sender_role: "hr",
-            body,
-            created_at: new Date().toISOString(),
-          },
-        ]);
+        setMessages((prev) =>
+          prev.some((message) => message.id === result.message.id)
+            ? prev
+            : [...prev, result.message],
+        );
 
         setMessageSaved(true);
       } catch {
@@ -226,6 +223,15 @@ export default function ThreadPanel({
           className="border-b border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
         >
           {campError}
+        </p>
+      )}
+
+      {realtimeError && (
+        <p
+          role="status"
+          className="border-b border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800"
+        >
+          {realtimeError}
         </p>
       )}
 

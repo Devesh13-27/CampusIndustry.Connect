@@ -4,7 +4,7 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { requireVerifiedRole } from "@/lib/guards";
-import type { PostingStatus } from "@/lib/types";
+import type { Message, PostingStatus } from "@/lib/types";
 
 const PostingSchema = z.object({
   roleTitle: z.string().min(2, "Role title must be at least 2 characters"),
@@ -25,6 +25,9 @@ const PostingSchema = z.object({
 );
 
 type ActionResult = { success: true } | { success: false; error: string };
+type MessageActionResult =
+  | { success: true; message: Message }
+  | { success: false; error: string };
 
 export async function createPosting(formData: FormData): Promise<ActionResult> {
   const profile = await requireVerifiedRole("hr");
@@ -85,25 +88,30 @@ export async function sendMessageAsHr(
   companyId: string,
   collegeId: string,
   body: string,
-): Promise<ActionResult> {
+): Promise<MessageActionResult> {
   if (!body.trim()) return { success: false, error: "Message cannot be empty." };
 
   const profile = await requireVerifiedRole("hr");
   const supabase = await createClient();
 
-  const { error } = await supabase.from("messages").insert({
-    posting_id: postingId,
-    college_id: collegeId,
-    company_id: companyId,
-    sender_id: profile.id,
-    sender_role: "hr",
-    body: body.trim(),
-  });
+  const { data, error } = await supabase
+    .from("messages")
+    .insert({
+      posting_id: postingId,
+      college_id: collegeId,
+      company_id: companyId,
+      sender_id: profile.id,
+      sender_role: "hr",
+      body: body.trim(),
+    })
+    .select()
+    .single();
 
   if (error) return { success: false, error: error.message };
+  if (!data) return { success: false, error: "Unable to read the sent message." };
 
   revalidatePath(`/company/postings/${postingId}`);
-  return { success: true };
+  return { success: true, message: data as Message };
 }
 
 export async function proposeCamp(

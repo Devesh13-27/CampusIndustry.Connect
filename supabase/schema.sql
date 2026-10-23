@@ -96,6 +96,9 @@ create table messages (
   created_at timestamptz not null default now()
 );
 
+-- Enable Supabase Realtime subscriptions for live thread updates.
+alter publication supabase_realtime add table messages;
+
 -- ─────────────────────────────────────────────────────────────────────────
 -- Camps / industry visits
 -- ─────────────────────────────────────────────────────────────────────────

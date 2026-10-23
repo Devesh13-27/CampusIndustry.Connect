@@ -17,6 +17,7 @@ export default async function CollegePostingDetail({
 }) {
   const { id } = await params;
   const profile = await requireVerifiedRole("tp");
+  if (!profile.college_id) notFound();
   const supabase = await createClient();
 
   const { data: posting } = await supabase
@@ -105,6 +106,7 @@ export default async function CollegePostingDetail({
           <div className="md:col-span-3">
             <TpThreadPanel
               postingId={posting.id}
+              collegeId={profile.college_id}
               companyId={posting.company_id}
               initialMessages={messages ?? []}
               camp={camp}
