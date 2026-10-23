@@ -16,6 +16,29 @@ export function useRealtimeMessages(
 
   useEffect(() => {
     const supabase = createClient();
+    let disposed = false;
+
+    async function loadMessages() {
+      const { data, error } = await supabase
+        .from("messages")
+        .select("*")
+        .eq("posting_id", postingId)
+        .eq("college_id", collegeId)
+        .order("created_at", { ascending: true });
+
+      if (disposed) return;
+
+      if (error) {
+        setRealtimeError(
+          "Live message updates are unavailable. Refresh to check for new messages.",
+        );
+        return;
+      }
+
+      setRealtimeError(null);
+      setMessages(data as Message[]);
+    }
+
     const channel = supabase
       .channel(`messages:${postingId}:${collegeId}`)
       .on(
@@ -48,7 +71,14 @@ export function useRealtimeMessages(
         }
       });
 
+    void loadMessages();
+    const pollingId = window.setInterval(() => {
+      void loadMessages();
+    }, 3000);
+
     return () => {
+      disposed = true;
+      window.clearInterval(pollingId);
       void supabase.removeChannel(channel);
     };
   }, [postingId, collegeId]);

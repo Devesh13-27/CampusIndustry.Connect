@@ -71,9 +71,15 @@ export default function TpThreadPanel({
             return prev.filter((message) => message.id !== optimistic.id);
           }
 
-          return prev.map((message) =>
-            message.id === optimistic.id ? result.message : message,
+          const hasOptimisticMessage = prev.some(
+            (message) => message.id === optimistic.id,
           );
+
+          return hasOptimisticMessage
+            ? prev.map((message) =>
+                message.id === optimistic.id ? result.message : message,
+              )
+            : [...prev, result.message];
         });
       } catch {
         setMessages((prev) =>
