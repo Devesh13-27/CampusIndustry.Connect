@@ -2,20 +2,77 @@
 
 import { useState, useTransition } from "react";
 import { upsertInterest } from "@/app/college/actions";
+import { createClient } from "@/lib/supabase/client";
 import type { InterestReport } from "@/lib/types";
 
 export default function InterestForm({
   postingId,
   existing,
+  initialResumePaths = [],
 }: {
   postingId: string;
   existing: InterestReport | null;
+  initialResumePaths?: string[];
 }) {
   const [interested, setInterested] = useState(existing?.interested_count ?? 0);
   const [eligible, setEligible] = useState(existing?.eligible_count ?? 0);
   const [isPending, startTransition] = useTransition();
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [resumePaths, setResumePaths] = useState(initialResumePaths);
+  const [uploading, setUploading] = useState(false);
+
+  async function uploadResumes(files: FileList | null) {
+    if (!files?.length) return;
+    setUploading(true);
+    setError(null);
+    const allowedTypes = new Set([
+      "application/pdf",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ]);
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      setError("Your session has expired. Please sign in again.");
+      setUploading(false);
+      return;
+    }
+    const uploaded: string[] = [];
+
+    for (const file of Array.from(files)) {
+      if (!allowedTypes.has(file.type)) {
+        setError("Each resume must be a PDF, DOC, or DOCX file.");
+        break;
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        setError("Each resume must be 10 MB or smaller.");
+        break;
+      }
+      const extension = file.name.split(".").pop()?.toLowerCase() || "pdf";
+      const path = `${crypto.randomUUID()}`;
+      const storagePath = `${user.id}/jobs/${postingId}/${path}.${extension}`;
+      const { error: uploadError } = await supabase.storage
+        .from("resumes")
+        .upload(storagePath, file, {
+          upsert: false,
+          contentType: file.type,
+        });
+      if (uploadError) {
+        setError("Could not upload one or more resumes. Please try again.");
+        break;
+      }
+      uploaded.push(storagePath);
+    }
+
+    if (uploaded.length) {
+      setResumePaths((current) => [...current, ...uploaded]);
+      setSaved(false);
+    }
+    setUploading(false);
+  }
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -37,7 +94,7 @@ export default function InterestForm({
 
     startTransition(async () => {
       try {
-        const result = await upsertInterest(postingId, interested, eligible);
+        const result = await upsertInterest(postingId, interested, eligible, resumePaths);
 
         if (!result.success) {
           setError(result.error);
@@ -99,6 +156,23 @@ export default function InterestForm({
         />
       </label>
 
+      <div className="block text-sm">
+        <span className="field-label">Student resumes</span>
+        <p className="mt-1 text-xs leading-5 text-slate-500">
+          Upload at least one PDF, DOC, or DOCX resume for the students you are reporting.
+          Each file can be up to 10 MB.
+        </p>
+        <input
+          type="file"
+          multiple
+          accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+          onChange={(event) => void uploadResumes(event.target.files)}
+          disabled={isPending || uploading}
+          className="mt-3 block w-full text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-blue-50 file:px-3 file:py-2 file:font-medium file:text-blue-700"
+        />
+        <p className="mt-2 text-sm text-slate-600">{resumePaths.length} resume(s) attached</p>
+      </div>
+
       <label className="block text-sm">
         <span className="field-label">Interested students</span>
         <input
@@ -136,10 +210,10 @@ export default function InterestForm({
 
       <button
         type="submit"
-        disabled={isPending || invalid}
+        disabled={isPending || uploading || invalid || resumePaths.length === 0}
         className="btn-primary min-h-10 w-full"
       >
-        {isPending ? "Saving…" : existing ? "Update count" : "Log interest"}
+        {uploading ? "Uploading…" : isPending ? "Saving…" : existing ? "Update count" : "Log interest"}
       </button>
 
       <div

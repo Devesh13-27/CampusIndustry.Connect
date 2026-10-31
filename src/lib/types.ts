@@ -69,6 +69,18 @@ export interface InterestReport {
   updated_at: string;
 }
 
+export interface JobResume {
+  id: string;
+  posting_id: string;
+  college_id: string;
+  uploaded_by: string;
+  file_path: string;
+  file_name: string;
+  content_type: string;
+  file_size: number;
+  created_at: string;
+}
+
 export interface Message {
   id: string;
   posting_id: string;

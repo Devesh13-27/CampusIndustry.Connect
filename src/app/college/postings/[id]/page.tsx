@@ -35,13 +35,18 @@ export default async function CollegePostingDetail({
     .eq("id", profile.college_id)
     .single();
 
-  const [{ data: myInterest }, { data: messages }, { data: camp }] = await Promise.all([
+  const [{ data: myInterest }, { data: resumes }, { data: messages }, { data: camp }] = await Promise.all([
     supabase
       .from("interest_reports")
       .select("*")
       .eq("posting_id", id)
       .eq("college_id", profile.college_id)
       .maybeSingle(),
+    supabase
+      .from("job_resumes")
+      .select("file_path")
+      .eq("posting_id", id)
+      .eq("college_id", profile.college_id),
     supabase
       .from("messages")
       .select("*")
@@ -99,7 +104,11 @@ export default async function CollegePostingDetail({
             <h2 className="mb-2 text-sm font-semibold text-slate-700">
               Your college&apos;s interest
             </h2>
-            <InterestForm postingId={posting.id} existing={myInterest} />
+            <InterestForm
+              postingId={posting.id}
+              existing={myInterest}
+              initialResumePaths={(resumes ?? []).map((resume) => resume.file_path)}
+            />
           </div>
 
           <div className="min-h-0 md:col-span-3">

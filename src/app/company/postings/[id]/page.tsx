@@ -8,12 +8,13 @@ import EmptyState from "@/components/EmptyState";
 import Icon from "@/components/Icon";
 import StatusSelect from "./StatusSelect";
 import ThreadPanel from "./ThreadPanel";
-import type { InterestReport, Message, CampVisit } from "@/lib/types";
+import type { InterestReport, Message, CampVisit, JobResume } from "@/lib/types";
 import { getProfileCompletion } from "@/lib/profile-completion";
 
 type InterestWithCollege = InterestReport & {
   colleges: { id: string; name: string; city: string | null };
 };
+type JobResumeWithCollege = JobResume & { colleges: { name: string } | null };
 
 export default async function CompanyPostingDetail({
   params,
@@ -48,6 +49,19 @@ export default async function CompanyPostingDetail({
     .eq("posting_id", id)
     .order("interested_count", { ascending: false })
     .returns<InterestWithCollege[]>();
+  const { data: resumes } = await supabase
+    .from("job_resumes")
+    .select("*, colleges(name)")
+    .eq("posting_id", id)
+    .returns<JobResumeWithCollege[]>();
+  const resumesWithLinks = await Promise.all(
+    (resumes ?? []).map(async (resume) => {
+      const { data } = await supabase.storage
+        .from("resumes")
+        .createSignedUrl(resume.file_path, 60 * 60);
+      return { ...resume, signedUrl: data?.signedUrl ?? null };
+    }),
+  );
 
   let messages: Message[] = [];
   let camp: CampVisit | null = null;
@@ -130,6 +144,32 @@ export default async function CompanyPostingDetail({
                 </p>
               </Link>
             ))}
+            {resumesWithLinks.length ? (
+              <div className="mt-4 card p-3">
+                <p className="font-medium text-slate-900">Attached resumes</p>
+                <div className="mt-2 space-y-1">
+                  {resumesWithLinks.map((resume) => (
+                    <div key={resume.id} className="flex items-center justify-between gap-3 text-sm">
+                      <span className="truncate text-slate-600">
+                        {resume.colleges?.name ?? "College"} · {resume.file_name}
+                      </span>
+                      {resume.signedUrl ? (
+                        <a
+                          href={resume.signedUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="shrink-0 font-medium text-blue-700 hover:text-blue-900"
+                        >
+                          Download
+                        </a>
+                      ) : (
+                        <span className="shrink-0 text-slate-400">Unavailable</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null}
           </div>
 
           <div className="min-h-0 md:col-span-3">

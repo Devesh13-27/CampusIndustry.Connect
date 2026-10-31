@@ -14,6 +14,7 @@ export async function upsertInterest(
   postingId: string,
   interestedCount: number,
   eligibleCount: number,
+  resumePaths: string[],
 ): Promise<ActionResult> {
   if (interestedCount < 0 || eligibleCount < 0) {
     return { success: false, error: "Counts cannot be negative." };
@@ -24,6 +25,52 @@ export async function upsertInterest(
 
   const profile = await requireVerifiedRole("tp");
   const supabase = await createClient();
+  const paths = [...new Set(resumePaths)];
+  if (paths.length === 0) {
+    return { success: false, error: "Upload at least one student resume before showing interest." };
+  }
+  if (
+    paths.some(
+      (path) =>
+        !path.startsWith(`${profile.id}/jobs/${postingId}/`) ||
+        path.split("/").length !== 4,
+    )
+  ) {
+    return { success: false, error: "One or more resumes are invalid for this job." };
+  }
+
+  const { data: posting } = await supabase
+    .from("postings")
+    .select("id")
+    .eq("id", postingId)
+    .maybeSingle();
+  if (!posting) return { success: false, error: "Job posting not found." };
+
+  const { data: existingResumes, error: resumeLookupError } = await supabase
+    .from("job_resumes")
+    .select("id, file_path")
+    .eq("posting_id", postingId)
+    .eq("college_id", profile.college_id);
+  if (resumeLookupError) return { success: false, error: resumeLookupError.message };
+
+  const existingByPath = new Map(
+    (existingResumes ?? []).map((resume) => [resume.file_path, resume.id]),
+  );
+  const newPaths = paths.filter((path) => !existingByPath.has(path));
+  if (newPaths.length > 0) {
+    const { error: resumeInsertError } = await supabase.from("job_resumes").insert(
+      newPaths.map((filePath) => ({
+        posting_id: postingId,
+        college_id: profile.college_id,
+        uploaded_by: profile.id,
+        file_path: filePath,
+        file_name: filePath.split("/").pop() ?? "resume",
+        content_type: "application/octet-stream",
+        file_size: 0,
+      })),
+    );
+    if (resumeInsertError) return { success: false, error: resumeInsertError.message };
+  }
 
   const { error } = await supabase.from("interest_reports").upsert(
     {

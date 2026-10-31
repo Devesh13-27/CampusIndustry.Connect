@@ -102,6 +102,22 @@ create table interest_reports (
 create index interest_reports_college_id_idx
   on interest_reports (college_id);
 
+-- Resumes submitted by T&P for a specific job posting.
+create table job_resumes (
+  id uuid primary key default gen_random_uuid(),
+  posting_id uuid not null references postings (id) on delete cascade,
+  college_id uuid not null references colleges (id),
+  uploaded_by uuid not null references profiles (id),
+  file_path text not null unique,
+  file_name text not null,
+  content_type text not null,
+  file_size int not null check (file_size >= 0),
+  created_at timestamptz not null default now()
+);
+
+create index job_resumes_posting_college_idx
+  on job_resumes (posting_id, college_id);
+
 -- ─────────────────────────────────────────────────────────────────────────
 -- Messages — one thread per (posting, college) pair
 -- ─────────────────────────────────────────────────────────────────────────
@@ -221,6 +237,25 @@ create policy "resumes self manage" on storage.objects
     and ((storage.foldername(name))[1] = auth.uid()::text or is_admin())
   );
 
+create policy "job resumes readable by participants" on storage.objects
+  for select using (
+    bucket_id = 'resumes'
+    and exists (
+      select 1
+      from job_resumes jr
+      where jr.file_path = name
+        and (
+          jr.college_id = current_college_id()
+          or exists (
+            select 1 from postings p
+            where p.id = jr.posting_id
+              and p.company_id = current_company_id()
+          )
+          or is_admin()
+        )
+    )
+  );
+
 -- ─────────────────────────────────────────────────────────────────────────
 -- RLS
 -- ─────────────────────────────────────────────────────────────────────────
@@ -230,6 +265,7 @@ alter table companies enable row level security;
 alter table profiles enable row level security;
 alter table postings enable row level security;
 alter table interest_reports enable row level security;
+alter table job_resumes enable row level security;
 alter table messages enable row level security;
 alter table camps_visits enable row level security;
 
@@ -297,6 +333,30 @@ create policy "interest upsert by owning tp" on interest_reports
   );
 create policy "interest update by owning tp" on interest_reports
   for update using (
+    current_role_name() = 'tp'
+    and college_id = current_college_id()
+  );
+
+-- Job resumes are visible to the reporting college and the posting's company.
+create policy "job resumes read by participants" on job_resumes
+  for select using (
+    college_id = current_college_id()
+    or exists (
+      select 1 from postings p
+      where p.id = job_resumes.posting_id
+        and p.company_id = current_company_id()
+    )
+    or is_admin()
+  );
+create policy "job resumes insert by owning tp" on job_resumes
+  for insert with check (
+    current_role_name() = 'tp'
+    and college_id = current_college_id()
+    and uploaded_by = auth.uid()
+    and is_verified_profile()
+  );
+create policy "job resumes delete by owning tp" on job_resumes
+  for delete using (
     current_role_name() = 'tp'
     and college_id = current_college_id()
   );
