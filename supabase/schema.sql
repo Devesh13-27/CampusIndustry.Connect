@@ -38,6 +38,7 @@ create table profiles (
   phone text,
   alternate_email text,
   profile_photo_path text,
+  resume_path text,
   gender text check (gender in ('female', 'male', 'non_binary', 'prefer_not_to_say')),
   designation text,
   department text,
@@ -195,6 +196,10 @@ insert into storage.buckets (id, name, public)
 values ('profile-photos', 'profile-photos', false)
 on conflict (id) do nothing;
 
+insert into storage.buckets (id, name, public)
+values ('resumes', 'resumes', false)
+on conflict (id) do nothing;
+
 create policy "profile photos self manage" on storage.objects
   for all using (
     bucket_id = 'profile-photos'
@@ -202,6 +207,16 @@ create policy "profile photos self manage" on storage.objects
   )
   with check (
     bucket_id = 'profile-photos'
+    and ((storage.foldername(name))[1] = auth.uid()::text or is_admin())
+  );
+
+create policy "resumes self manage" on storage.objects
+  for all using (
+    bucket_id = 'resumes'
+    and ((storage.foldername(name))[1] = auth.uid()::text or is_admin())
+  )
+  with check (
+    bucket_id = 'resumes'
     and ((storage.foldername(name))[1] = auth.uid()::text or is_admin())
   );
 

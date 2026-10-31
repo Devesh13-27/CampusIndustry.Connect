@@ -12,6 +12,7 @@ export interface Profile {
   phone: string | null;
   alternate_email: string | null;
   profile_photo_path: string | null;
+  resume_path: string | null;
   gender: "female" | "male" | "non_binary" | "prefer_not_to_say" | null;
   designation: string | null;
   department: string | null;

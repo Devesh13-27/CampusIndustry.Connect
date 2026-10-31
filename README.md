@@ -3,8 +3,9 @@
 A private, invite-only portal connecting company HR teams and college
 Training & Placement (T&P) officers — post openings, report interest,
 message, and schedule recruitment camps / industry visits. No student
-accounts, no payments, no resume parsing — just the core discover → talk →
-schedule loop.
+accounts, no payments, and no resume parsing — just the core discover → talk
+→ schedule loop. Users can optionally upload a private resume for
+administrator management.
 
 ## Stack
 
@@ -18,7 +19,7 @@ schedule loop.
    creates all tables, RLS policies, and helper functions.
    If the database was created from an earlier version of the schema, run
    [`supabase/add_user_profiles.sql`](supabase/add_user_profiles.sql) instead
-   to add the role-specific profile fields and private photo storage.
+   to add the role-specific profile fields and private photo/resume storage.
 3. Copy `.env.local.example` to `.env.local` and fill in your project's URL
    and keys (Project Settings → API):
    ```bash
@@ -46,6 +47,8 @@ schedule loop.
    Profiles include common contact details and role-specific information for HR
    and T&P officers. Profile photos are stored in the private `profile-photos`
    Supabase Storage bucket.
+   Resumes are stored separately in the private `resumes` bucket. Admins can
+   delete users, job openings, and uploaded resumes from `/admin`.
 
 ### Password recovery
 

@@ -9,6 +9,7 @@ const profileFields = [
   "phone",
   "alternate_email",
   "profile_photo_path",
+  "resume_path",
   "gender",
   "designation",
   "department",
@@ -35,6 +36,10 @@ export async function saveProfile(formData: FormData): Promise<ActionResult> {
   const photoPath = value(formData, "profile_photo_path");
   if (photoPath && !photoPath.startsWith(`${user.id}/`)) {
     return { success: false, error: "Invalid profile photo." };
+  }
+  const resumePath = value(formData, "resume_path");
+  if (resumePath && !resumePath.startsWith(`${user.id}/`)) {
+    return { success: false, error: "Invalid resume." };
   }
 
   const payload = Object.fromEntries(

@@ -5,6 +5,7 @@ alter table profiles
   add column if not exists phone text,
   add column if not exists alternate_email text,
   add column if not exists profile_photo_path text,
+  add column if not exists resume_path text,
   add column if not exists gender text,
   add column if not exists designation text,
   add column if not exists department text,
@@ -25,6 +26,10 @@ insert into storage.buckets (id, name, public)
 values ('profile-photos', 'profile-photos', false)
 on conflict (id) do nothing;
 
+insert into storage.buckets (id, name, public)
+values ('resumes', 'resumes', false)
+on conflict (id) do nothing;
+
 drop policy if exists "profile photos self manage" on storage.objects;
 
 create policy "profile photos self manage" on storage.objects
@@ -34,6 +39,18 @@ create policy "profile photos self manage" on storage.objects
   )
   with check (
     bucket_id = 'profile-photos'
+    and ((storage.foldername(name))[1] = auth.uid()::text or is_admin())
+  );
+
+drop policy if exists "resumes self manage" on storage.objects;
+
+create policy "resumes self manage" on storage.objects
+  for all using (
+    bucket_id = 'resumes'
+    and ((storage.foldername(name))[1] = auth.uid()::text or is_admin())
+  )
+  with check (
+    bucket_id = 'resumes'
     and ((storage.foldername(name))[1] = auth.uid()::text or is_admin())
   );
 

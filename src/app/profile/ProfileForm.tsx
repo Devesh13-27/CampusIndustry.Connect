@@ -9,6 +9,8 @@ import type { Profile } from "@/lib/types";
 
 export default function ProfileForm({ profile }: { profile: Profile }) {
   const [photoPath, setPhotoPath] = useState(profile.profile_photo_path ?? "");
+  const [resumePath, setResumePath] = useState(profile.resume_path ?? "");
+  const [resumeError, setResumeError] = useState<string | null>(null);
   const [photoError, setPhotoError] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
@@ -40,6 +42,37 @@ export default function ProfileForm({ profile }: { profile: Profile }) {
     setPhotoPath(path);
   }
 
+  async function uploadResume(file: File) {
+    setResumeError(null);
+    setSaved(false);
+    const allowedTypes = new Set([
+      "application/pdf",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ]);
+    if (!allowedTypes.has(file.type)) {
+      setResumeError("Choose a PDF, DOC, or DOCX file.");
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      setResumeError("Resumes must be 10 MB or smaller.");
+      return;
+    }
+
+    const extension = file.name.split(".").pop()?.toLowerCase() || "pdf";
+    const path = `${profile.id}/${crypto.randomUUID()}.${extension}`;
+    const supabase = createClient();
+    const { error } = await supabase.storage
+      .from("resumes")
+      .upload(path, file, { upsert: false, contentType: file.type });
+
+    if (error) {
+      setResumeError("Could not upload the resume. Please try again.");
+      return;
+    }
+    setResumePath(path);
+  }
+
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setSaving(true);
@@ -58,6 +91,7 @@ export default function ProfileForm({ profile }: { profile: Profile }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <input type="hidden" name="profile_photo_path" value={photoPath} />
+      <input type="hidden" name="resume_path" value={resumePath} />
 
       <section>
         <h2 className="text-sm font-semibold text-slate-900">Basic information</h2>
@@ -77,6 +111,14 @@ export default function ProfileForm({ profile }: { profile: Profile }) {
             </select>
           </div>
         </div>
+      </section>
+
+      <section>
+        <h2 className="text-sm font-semibold text-slate-900">Resume</h2>
+        <p className="mt-1 text-xs text-slate-500">Private to you and administrators. PDF, DOC, or DOCX up to 10 MB.</p>
+        {resumePath && <p className="mt-2 text-sm text-green-700">Resume uploaded.</p>}
+        <input className="mt-3 block w-full text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-blue-50 file:px-3 file:py-2 file:font-medium file:text-blue-700" type="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={(event) => { const file = event.target.files?.[0]; if (file) void uploadResume(file); }} />
+        {resumeError && <p role="alert" className="mt-1.5 text-sm text-red-600">{resumeError}</p>}
       </section>
 
       <section>
@@ -110,7 +152,7 @@ export default function ProfileForm({ profile }: { profile: Profile }) {
       {formError && <p role="alert" className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{formError}</p>}
       {saved && <p role="status" className="rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700">Profile saved.</p>}
 
-      <StarBorder type="submit" disabled={saving || Boolean(photoError)} aria-busy={saving}>
+      <StarBorder type="submit" disabled={saving || Boolean(photoError) || Boolean(resumeError)} aria-busy={saving}>
         {saving ? "Saving profile…" : "Save profile"}
       </StarBorder>
     </form>
