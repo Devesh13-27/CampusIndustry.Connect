@@ -68,17 +68,38 @@ export async function createPosting(formData: FormData): Promise<ActionResult> {
 }
 
 export async function updatePostingStatus(postingId: string, status: PostingStatus): Promise<ActionResult> {
-  await requireVerifiedRole("hr");
+  const profile = await requireVerifiedRole("hr");
+  if (!["open", "camp_scheduled", "closed"].includes(status)) {
+    return { success: false, error: "Invalid posting status." };
+  }
+
   const supabase = await createClient();
 
   const { error } = await supabase
     .from("postings")
     .update({ status })
-    .eq("id", postingId);
+    .eq("id", postingId)
+    .eq("company_id", profile.company_id);
 
-  if (error) return { success: false, error: error.message };
+  if (error) return { success: false, error: "Could not update the posting." };
 
   revalidatePath(`/company/postings/${postingId}`);
+  revalidatePath("/company/dashboard");
+  return { success: true };
+}
+
+export async function deletePosting(postingId: string): Promise<ActionResult> {
+  const profile = await requireVerifiedRole("hr");
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("postings")
+    .delete()
+    .eq("id", postingId)
+    .eq("company_id", profile.company_id);
+
+  if (error) return { success: false, error: "Could not delete the posting." };
+
   revalidatePath("/company/dashboard");
   return { success: true };
 }

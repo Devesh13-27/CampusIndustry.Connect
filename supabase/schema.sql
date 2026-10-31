@@ -242,6 +242,11 @@ create policy "postings update by owning hr" on postings
     current_role_name() = 'hr'
     and company_id = current_company_id()
   );
+create policy "postings delete by owning hr" on postings
+  for delete using (
+    current_role_name() = 'hr'
+    and company_id = current_company_id()
+  );
 
 -- interest_reports: the reporting college can read/write its own row;
 -- the owning company (via the posting) can read all rows for its posting

@@ -36,3 +36,11 @@ create policy "profile photos self manage" on storage.objects
     bucket_id = 'profile-photos'
     and ((storage.foldername(name))[1] = auth.uid()::text or is_admin())
   );
+
+drop policy if exists "postings delete by owning hr" on postings;
+
+create policy "postings delete by owning hr" on postings
+  for delete using (
+    current_role_name() = 'hr'
+    and company_id = current_company_id()
+  );
