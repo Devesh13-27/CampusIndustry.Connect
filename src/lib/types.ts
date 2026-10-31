@@ -9,6 +9,17 @@ export interface Profile {
   full_name: string;
   email: string;
   role: Role;
+  phone: string | null;
+  alternate_email: string | null;
+  profile_photo_path: string | null;
+  gender: "female" | "male" | "non_binary" | "prefer_not_to_say" | null;
+  designation: string | null;
+  department: string | null;
+  linkedin_url: string | null;
+  hiring_authority: string | null;
+  office_location: string | null;
+  office_phone: string | null;
+  programs_branches: string | null;
   college_id: string | null;
   company_id: string | null;
   verification_status: VerificationStatus;

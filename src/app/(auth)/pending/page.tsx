@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/auth";
 import LogoutButton from "@/components/LogoutButton";
+import Link from "next/link";
 import FullLogo from "@/components/FullLogo";
 import AuthBackdrop from "@/components/AuthBackdrop";
 
@@ -46,6 +47,9 @@ export default async function PendingPage() {
             : `We're confirming your account and ${org?.name ?? "your organization"} before giving access. This is usually quick — check back soon.`}
         </p>
         <div className="mt-6">
+          <Link href="/profile" className="btn-secondary mb-3 w-full">
+            Complete your profile
+          </Link>
           <LogoutButton />
         </div>
       </div>

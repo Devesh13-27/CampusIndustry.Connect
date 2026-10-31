@@ -35,6 +35,17 @@ create table profiles (
   full_name text not null,
   email text not null,
   role text not null check (role in ('hr', 'tp', 'admin')),
+  phone text,
+  alternate_email text,
+  profile_photo_path text,
+  gender text check (gender in ('female', 'male', 'non_binary', 'prefer_not_to_say')),
+  designation text,
+  department text,
+  linkedin_url text,
+  hiring_authority text,
+  office_location text,
+  office_phone text,
+  programs_branches text,
   college_id uuid references colleges (id),
   company_id uuid references companies (id),
   verification_status text not null default 'pending'
@@ -165,6 +176,21 @@ returns boolean language sql stable security definer set search_path = public as
     select 1 from profiles where id = auth.uid() and role = 'admin'
   );
 $$;
+
+-- Profile photos are private and are addressed as {user_id}/{filename}.
+insert into storage.buckets (id, name, public)
+values ('profile-photos', 'profile-photos', false)
+on conflict (id) do nothing;
+
+create policy "profile photos self manage" on storage.objects
+  for all using (
+    bucket_id = 'profile-photos'
+    and ((storage.foldername(name))[1] = auth.uid()::text or is_admin())
+  )
+  with check (
+    bucket_id = 'profile-photos'
+    and ((storage.foldername(name))[1] = auth.uid()::text or is_admin())
+  );
 
 -- ─────────────────────────────────────────────────────────────────────────
 -- RLS

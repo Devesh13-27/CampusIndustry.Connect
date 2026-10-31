@@ -16,6 +16,9 @@ schedule loop.
 1. Create a Supabase project at [supabase.com](https://supabase.com).
 2. In the SQL editor, run [`supabase/schema.sql`](supabase/schema.sql) — this
    creates all tables, RLS policies, and helper functions.
+   If the database was created from an earlier version of the schema, run
+   [`supabase/add_user_profiles.sql`](supabase/add_user_profiles.sql) instead
+   to add the role-specific profile fields and private photo storage.
 3. Copy `.env.local.example` to `.env.local` and fill in your project's URL
    and keys (Project Settings → API):
    ```bash
@@ -38,6 +41,11 @@ schedule loop.
      company_id = null, college_id = null where email = 'you@example.com';
    ```
    From then on, log in and use `/admin` to approve every new signup.
+
+   After signing up, users can complete or update their profile at `/profile`.
+   Profiles include common contact details and role-specific information for HR
+   and T&P officers. Profile photos are stored in the private `profile-photos`
+   Supabase Storage bucket.
 
 ### Password recovery
 
