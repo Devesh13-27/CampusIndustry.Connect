@@ -44,3 +44,14 @@ create policy "postings delete by owning hr" on postings
     current_role_name() = 'hr'
     and company_id = current_company_id()
   );
+
+create index if not exists postings_company_created_at_idx
+  on postings (company_id, created_at desc);
+create index if not exists postings_status_created_at_idx
+  on postings (status, created_at desc);
+create index if not exists interest_reports_college_id_idx
+  on interest_reports (college_id);
+create index if not exists camps_visits_college_schedule_idx
+  on camps_visits (college_id, status, scheduled_date);
+create index if not exists camps_visits_company_schedule_idx
+  on camps_visits (company_id, status, scheduled_date);

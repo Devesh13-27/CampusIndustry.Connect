@@ -13,17 +13,18 @@ export default async function CompanyDashboard() {
   const profile = await requireVerifiedRole("hr");
   const supabase = await createClient();
 
-  const { data: company } = await supabase
-    .from("companies")
-    .select("name")
-    .eq("id", profile.company_id)
-    .single();
-
-  const { data: postings } = await supabase
-    .from("postings")
-    .select("*, interest_reports(interested_count)")
-    .eq("company_id", profile.company_id)
-    .order("created_at", { ascending: false });
+  const [{ data: company }, { data: postings }] = await Promise.all([
+    supabase
+      .from("companies")
+      .select("name")
+      .eq("id", profile.company_id)
+      .single(),
+    supabase
+      .from("postings")
+      .select("id, role_title, branches, num_openings, target_start, target_end, status, interest_reports(interested_count)")
+      .eq("company_id", profile.company_id)
+      .order("created_at", { ascending: false }),
+  ]);
 
   type PostingWithInterest = NonNullable<typeof postings>[number];
 

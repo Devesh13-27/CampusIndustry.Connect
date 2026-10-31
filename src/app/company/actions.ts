@@ -92,13 +92,40 @@ export async function deletePosting(postingId: string): Promise<ActionResult> {
   const profile = await requireVerifiedRole("hr");
   const supabase = await createClient();
 
-  const { error } = await supabase
+  const { data: posting, error: lookupError } = await supabase
+    .from("postings")
+    .select("id")
+    .eq("id", postingId)
+    .eq("company_id", profile.company_id)
+    .maybeSingle();
+
+  if (lookupError) {
+    return { success: false, error: "Could not verify the posting ownership." };
+  }
+  if (!posting) {
+    return { success: false, error: "Posting not found or not owned by your company." };
+  }
+
+  const { data: deletedPosting, error } = await supabase
     .from("postings")
     .delete()
     .eq("id", postingId)
-    .eq("company_id", profile.company_id);
+    .eq("company_id", profile.company_id)
+    .select("id")
+    .maybeSingle();
 
-  if (error) return { success: false, error: "Could not delete the posting." };
+  if (error) {
+    return {
+      success: false,
+      error: "Could not delete the posting. Apply the latest Supabase database migration and try again.",
+    };
+  }
+  if (!deletedPosting) {
+    return {
+      success: false,
+      error: "The posting was not deleted. Apply the latest Supabase database migration and try again.",
+    };
+  }
 
   revalidatePath("/company/dashboard");
   return { success: true };

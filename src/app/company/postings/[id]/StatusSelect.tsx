@@ -63,7 +63,7 @@ export default function StatusSelect({
         setDeleteError(true);
         return;
       }
-      router.push("/company/dashboard");
+      router.replace("/company/dashboard");
       router.refresh();
     });
   }

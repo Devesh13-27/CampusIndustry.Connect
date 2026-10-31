@@ -77,6 +77,11 @@ create table postings (
   created_at timestamptz not null default now()
 );
 
+create index postings_company_created_at_idx
+  on postings (company_id, created_at desc);
+create index postings_status_created_at_idx
+  on postings (status, created_at desc);
+
 -- ─────────────────────────────────────────────────────────────────────────
 -- Interest reports (one row per college per posting, entered by T&P)
 -- ─────────────────────────────────────────────────────────────────────────
@@ -91,6 +96,9 @@ create table interest_reports (
   updated_at timestamptz not null default now(),
   unique (posting_id, college_id)
 );
+
+create index interest_reports_college_id_idx
+  on interest_reports (college_id);
 
 -- ─────────────────────────────────────────────────────────────────────────
 -- Messages — one thread per (posting, college) pair
@@ -126,6 +134,11 @@ create table camps_visits (
   created_by uuid not null references profiles (id),
   created_at timestamptz not null default now()
 );
+
+create index camps_visits_college_schedule_idx
+  on camps_visits (college_id, status, scheduled_date);
+create index camps_visits_company_schedule_idx
+  on camps_visits (company_id, status, scheduled_date);
 
 -- Only one active (proposed/confirmed) camp or visit per posting+college at
 -- a time. The app re-proposes by updating this row rather than inserting a

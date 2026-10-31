@@ -91,7 +91,7 @@ export function useRealtimeMessages(
     void loadMessages();
     const pollingId = window.setInterval(() => {
       void loadMessages();
-    }, 3000);
+    }, 15000);
 
     return () => {
       disposed = true;

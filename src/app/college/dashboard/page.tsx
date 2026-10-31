@@ -13,29 +13,33 @@ export default async function CollegeDashboard() {
   const profile = await requireVerifiedRole("tp");
   const supabase = await createClient();
 
-  const { data: college } = await supabase
-    .from("colleges")
-    .select("name")
-    .eq("id", profile.college_id)
-    .single();
-
-  const { data: postings } = await supabase
-    .from("postings")
-    .select("*, companies(name)")
-    .neq("status", "closed")
-    .order("created_at", { ascending: false })
-    .returns<PostingWithCompany[]>();
-
-  const { data: myInterests } = await supabase
-    .from("interest_reports")
-    .select("posting_id, interested_count, eligible_count")
-    .eq("college_id", profile.college_id);
-
-  const { count: upcomingCampsCount } = await supabase
-    .from("camps_visits")
-    .select("id", { count: "exact", head: true })
-    .eq("college_id", profile.college_id)
-    .in("status", ["proposed", "confirmed"]);
+  const [
+    { data: college },
+    { data: postings },
+    { data: myInterests },
+    { count: upcomingCampsCount },
+  ] = await Promise.all([
+    supabase
+      .from("colleges")
+      .select("name")
+      .eq("id", profile.college_id)
+      .single(),
+    supabase
+      .from("postings")
+      .select("id, company_id, created_by, role_title, branches, num_openings, target_start, target_end, description, status, created_at, companies(name)")
+      .neq("status", "closed")
+      .order("created_at", { ascending: false })
+      .returns<PostingWithCompany[]>(),
+    supabase
+      .from("interest_reports")
+      .select("posting_id, interested_count, eligible_count")
+      .eq("college_id", profile.college_id),
+    supabase
+      .from("camps_visits")
+      .select("id", { count: "exact", head: true })
+      .eq("college_id", profile.college_id)
+      .in("status", ["proposed", "confirmed"]),
+  ]);
 
   const interestMap = new Map((myInterests ?? []).map((r) => [r.posting_id, r]));
   const interestByPosting = Object.fromEntries(interestMap);

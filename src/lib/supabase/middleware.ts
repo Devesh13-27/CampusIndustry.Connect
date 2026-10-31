@@ -3,6 +3,17 @@ import { NextResponse, type NextRequest } from "next/server";
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
+  const path = request.nextUrl.pathname;
+  const isPublic =
+    path.startsWith("/login") ||
+    path.startsWith("/forgot-password") ||
+    path.startsWith("/reset-password") ||
+    path.startsWith("/signup") ||
+    path === "/" ||
+    path.startsWith("/_next") ||
+    path.startsWith("/api/public");
+
+  if (isPublic) return supabaseResponse;
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -28,16 +39,6 @@ export async function updateSession(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
-  const path = request.nextUrl.pathname;
-  const isPublic =
-    path.startsWith("/login") ||
-    path.startsWith("/forgot-password") ||
-    path.startsWith("/reset-password") ||
-    path.startsWith("/signup") ||
-    path === "/" ||
-    path.startsWith("/_next") ||
-    path.startsWith("/api/public");
 
   if (!user && !isPublic) {
     const url = request.nextUrl.clone();
