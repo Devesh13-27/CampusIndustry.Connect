@@ -3,7 +3,6 @@
 import { useEffect, useId, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import Image from "next/image";
 import LogoutButton from "./LogoutButton";
 import NotificationBell from "./NotificationBell";
 import type { Role } from "@/lib/types";
@@ -75,19 +74,6 @@ export default function Nav({
 
   return (
     <>
-      <div
-        aria-hidden="true"
-        className="pointer-events-none fixed inset-0 z-0 flex items-center justify-center overflow-hidden"
-      >
-        <Image
-          src="/brand/logo-transparent.png"
-          alt=""
-          width={768}
-          height={512}
-          className="w-[min(72vw,48rem)] opacity-[0.055] blur-[7px]"
-        />
-      </div>
-
       <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/90 shadow-sm shadow-slate-900/[0.03] backdrop-blur-md">
       <div className="h-0.5 bg-gradient-to-r from-blue-500 via-blue-400 to-blue-600" />
 
