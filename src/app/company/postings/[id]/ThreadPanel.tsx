@@ -130,7 +130,7 @@ export default function ThreadPanel({
   }
 
   return (
-    <div className="card flex h-full min-h-[500px] max-h-[600px] flex-col overflow-hidden">
+    <div className="card flex h-full min-h-[360px] max-h-[min(600px,70dvh)] flex-col overflow-hidden sm:min-h-[440px]">
       <div className="flex items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/50 p-3">
         <h3 className="min-w-0 truncate font-medium text-slate-900">
           {collegeName}

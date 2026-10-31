@@ -118,7 +118,7 @@ export default function TpThreadPanel({
 
   return (
     <div
-      className="card flex h-full min-h-[500px] max-h-[600px] flex-col overflow-hidden"
+      className="card flex h-full min-h-[360px] max-h-[min(600px,70dvh)] flex-col overflow-hidden sm:min-h-[440px]"
       aria-busy={isPending}
     >
       <div className="border-b border-slate-200 bg-slate-50/50 p-3">

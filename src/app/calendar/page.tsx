@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { requireVerifiedRole } from "@/lib/guards";
 import Nav from "@/components/Nav";
 import CalendarView, { type CalendarEvent } from "@/components/CalendarView";
+import { getProfileCompletion } from "@/lib/profile-completion";
 
 export default async function CalendarPage() {
   const profile = await requireVerifiedRole(["hr", "tp"]);
@@ -36,6 +37,7 @@ export default async function CalendarPage() {
       <Nav
         orgName={organization?.name ?? ""}
         role={profile.role}
+        profileCompletion={getProfileCompletion(profile).percentage}
       />
       <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8">
         <p className="text-xs font-semibold uppercase tracking-wider text-blue-600">Schedule</p>

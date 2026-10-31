@@ -8,6 +8,7 @@ import { CAMP_STATUS_LABEL } from "@/lib/statusStyles";
 import { formatDate } from "@/lib/utils";
 import ConfirmButton from "./ConfirmButton";
 import type { CampVisit } from "@/lib/types";
+import { getProfileCompletion } from "@/lib/profile-completion";
 
 type CampWithRefs = CampVisit & {
   postings: { role_title: string } | null;
@@ -36,6 +37,7 @@ export default async function CollegeCampsPage() {
       <Nav
         orgName={college?.name ?? ""}
         role="tp"
+        profileCompletion={getProfileCompletion(profile).percentage}
       />
       <div className="mx-auto max-w-3xl px-4 py-6 sm:px-6 sm:py-8">
         <h1 className="mb-6 text-xl font-semibold text-slate-900">

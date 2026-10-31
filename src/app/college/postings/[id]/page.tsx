@@ -7,6 +7,7 @@ import StatusBadge from "@/components/StatusBadge";
 import InterestForm from "./InterestForm";
 import TpThreadPanel from "./TpThreadPanel";
 import type { Posting } from "@/lib/types";
+import { getProfileCompletion } from "@/lib/profile-completion";
 
 type PostingWithCompany = Posting & { companies: { name: string } | null };
 
@@ -62,6 +63,7 @@ export default async function CollegePostingDetail({
       <Nav
         orgName={college?.name ?? ""}
         role="tp"
+        profileCompletion={getProfileCompletion(profile).percentage}
       />
       <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6 sm:py-8">
         <Link

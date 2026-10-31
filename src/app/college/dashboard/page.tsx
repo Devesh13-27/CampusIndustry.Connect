@@ -6,6 +6,7 @@ import StatCard from "@/components/StatCard";
 import Icon from "@/components/Icon";
 import JobPostingFilters from "./JobPostingFilters";
 import type { Posting } from "@/lib/types";
+import { getProfileCompletion } from "@/lib/profile-completion";
 
 type PostingWithCompany = Posting & { companies: { name: string } | null };
 
@@ -50,6 +51,7 @@ export default async function CollegeDashboard() {
       <Nav
         orgName={college?.name ?? ""}
         role="tp"
+        profileCompletion={getProfileCompletion(profile).percentage}
       />
       <div className="mx-auto w-full max-w-6xl px-4 py-5 sm:px-6 sm:py-8">
         {!!postings?.length && (

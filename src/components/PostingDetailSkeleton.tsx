@@ -21,7 +21,7 @@ export default function PostingDetailSkeleton() {
           </div>
 
           <div className="lg:col-span-3">
-            <SkeletonBar className="h-[400px] w-full rounded-xl sm:h-[500px]" />
+            <SkeletonBar className="h-[360px] w-full rounded-xl sm:h-[440px]" />
           </div>
         </div>
       </main>

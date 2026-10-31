@@ -9,6 +9,7 @@ import Icon from "@/components/Icon";
 import StatusSelect from "./StatusSelect";
 import ThreadPanel from "./ThreadPanel";
 import type { InterestReport, Message, CampVisit } from "@/lib/types";
+import { getProfileCompletion } from "@/lib/profile-completion";
 
 type InterestWithCollege = InterestReport & {
   colleges: { id: string; name: string; city: string | null };
@@ -76,6 +77,7 @@ export default async function CompanyPostingDetail({
       <Nav
         orgName={company?.name ?? ""}
         role="hr"
+        profileCompletion={getProfileCompletion(profile).percentage}
       />
       <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6 sm:py-8">
         <Link

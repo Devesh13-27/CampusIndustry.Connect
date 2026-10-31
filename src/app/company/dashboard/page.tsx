@@ -8,6 +8,7 @@ import FadeInStagger from "@/components/reactbits/FadeInStagger";
 import StatCard from "@/components/StatCard";
 import StatusBadge from "@/components/StatusBadge";
 import Icon from "@/components/Icon";
+import { getProfileCompletion } from "@/lib/profile-completion";
 
 export default async function CompanyDashboard() {
   const profile = await requireVerifiedRole("hr");
@@ -47,6 +48,7 @@ export default async function CompanyDashboard() {
       <Nav
         orgName={company?.name ?? ""}
         role="hr"
+        profileCompletion={getProfileCompletion(profile).percentage}
       />
       <div className="mx-auto w-full max-w-6xl px-4 py-5 sm:px-6 sm:py-8">
         {!!postings?.length && (

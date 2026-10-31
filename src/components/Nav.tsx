@@ -27,9 +27,11 @@ const linksByRole: Record<NavRole, { href: string; label: string }[]> = {
 export default function Nav({
   orgName,
   role,
+  profileCompletion,
 }: {
   orgName: string;
   role: NavRole;
+  profileCompletion?: number;
 }) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -77,7 +79,7 @@ export default function Nav({
       <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/90 shadow-sm shadow-slate-900/[0.03] backdrop-blur-md">
       <div className="h-0.5 bg-gradient-to-r from-blue-500 via-blue-400 to-blue-600" />
 
-      <div className="mx-auto flex min-h-20 w-full max-w-6xl items-center justify-between gap-2 px-3 sm:min-h-24 sm:gap-3 sm:px-6">
+      <div className="mx-auto flex min-h-20 w-full max-w-6xl items-center justify-between gap-2 px-3 sm:gap-3 sm:px-6">
         {/* Brand + desktop navigation */}
         <div className="flex min-w-0 flex-1 items-center gap-3 sm:flex-initial sm:gap-8">
           <Link
@@ -234,6 +236,19 @@ export default function Nav({
         )}
       </div>
       </header>
+      {role !== "admin" && profileCompletion !== undefined && profileCompletion < 100 && (
+        <div className="border-b border-amber-200 bg-amber-50">
+          <div className="mx-auto flex w-full max-w-6xl items-start justify-between gap-3 px-4 py-2 text-sm sm:items-center sm:px-6">
+            <p className="min-w-0 text-amber-900">
+              Complete your profile to help others connect with you.{" "}
+              <span className="font-semibold">{profileCompletion}% complete</span>
+            </p>
+            <Link href="/profile" className="shrink-0 font-semibold text-amber-800 underline underline-offset-2 hover:text-amber-950">
+              Update profile
+            </Link>
+          </div>
+        </div>
+      )}
     </>
   );
 }
