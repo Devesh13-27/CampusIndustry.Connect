@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { NotificationItem } from "@/lib/notifications";
 
 export default function NotificationBell() {
@@ -18,12 +18,27 @@ export default function NotificationBell() {
     }
   });
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const bellRef = useRef<HTMLDivElement>(null);
 
   async function loadNotifications() {
-    const response = await fetch("/api/notifications");
-    if (!response.ok) return;
-    const data = (await response.json()) as { notifications?: NotificationItem[] };
-    setNotifications(data.notifications ?? []);
+    try {
+      const response = await fetch("/api/notifications", { cache: "no-store" });
+      if (response.status === 401) {
+        setNotifications([]);
+        setLoadError(null);
+        return;
+      }
+      if (!response.ok) throw new Error("Notification request failed");
+      const data = (await response.json()) as { notifications?: NotificationItem[] };
+      setNotifications(data.notifications ?? []);
+      setLoadError(null);
+    } catch {
+      setLoadError("Notifications could not be loaded.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
@@ -35,12 +50,23 @@ export default function NotificationBell() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!open) return;
+    function closeOnOutsideClick(event: MouseEvent) {
+      if (bellRef.current && !bellRef.current.contains(event.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", closeOnOutsideClick);
+    return () => document.removeEventListener("mousedown", closeOnOutsideClick);
+  }, [open]);
+
   const unreadCount = notifications.filter((item) => !readIds.includes(item.id)).length;
 
   function markAllRead() {
-    const ids = notifications.map((item) => item.id);
-    setReadIds(ids);
-    window.localStorage.setItem("campus-connect-read-notifications", JSON.stringify(ids));
+    setReadIds((current) => {
+      const ids = Array.from(new Set([...current, ...notifications.map((item) => item.id)]));
+      window.localStorage.setItem("campus-connect-read-notifications", JSON.stringify(ids));
+      return ids;
+    });
   }
 
   function markRead(id: string) {
@@ -50,12 +76,11 @@ export default function NotificationBell() {
   }
 
   return (
-    <div className="relative shrink-0">
+    <div ref={bellRef} className="relative shrink-0">
       <button
         type="button"
         onClick={() => {
           setOpen((value) => !value);
-          if (!open) markAllRead();
         }}
         aria-label={`Notifications${unreadCount ? `, ${unreadCount} unread` : ""}`}
         aria-expanded={open}
@@ -89,14 +114,16 @@ export default function NotificationBell() {
             </button>
           </div>
           <div className="max-h-96 overflow-y-auto">
-            {!notifications.length && (
+            {loading && <p className="px-4 py-8 text-center text-sm text-slate-500">Loading notifications…</p>}
+            {!loading && loadError && <p role="alert" className="px-4 py-8 text-center text-sm text-red-600">{loadError}</p>}
+            {!loading && !loadError && !notifications.length && (
               <p className="px-4 py-8 text-center text-sm text-slate-500">
                 You&apos;re all caught up.
               </p>
             )}
-            {notifications.map((item) => (
+            {!loading && !loadError && notifications.map((item) => (
               <div key={item.id} className="border-b border-slate-100 px-4 py-3 transition-colors hover:bg-slate-50">
-                <Link href={item.href} onClick={() => setOpen(false)} className="block min-w-0">
+                <Link href={item.href} onClick={() => { markRead(item.id); setOpen(false); }} className="block min-w-0">
                   <p className="break-words text-sm font-medium text-slate-900">{item.title}</p>
                   <p className="mt-0.5 break-words text-xs leading-5 text-slate-500">{item.message}</p>
                 </Link>

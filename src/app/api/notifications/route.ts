@@ -38,14 +38,33 @@ export async function GET() {
     .order("scheduled_date", { ascending: true })
     .limit(30);
 
-  const [{ data: postings }, { data: camps }] = await Promise.all([
+  const messagesQuery = supabase
+    .from("messages")
+    .select("id, posting_id, sender_id, body, created_at, postings(role_title), colleges(name), companies(name)")
+    .neq("sender_id", profile.id)
+    .gte("created_at", recentOpeningDate.toISOString())
+    .order("created_at", { ascending: false })
+    .limit(40);
+
+  const [postingsResult, campsResult, messagesResult] = await Promise.all([
     profile.role === "hr"
       ? postingQuery.eq("company_id", profile.company_id)
       : postingQuery,
     profile.role === "hr"
       ? campsQuery.eq("company_id", profile.company_id)
       : campsQuery.eq("college_id", profile.college_id),
+    messagesQuery,
   ]);
+  if (postingsResult.error || campsResult.error || messagesResult.error) {
+    console.error(
+      "Could not load notifications",
+      postingsResult.error ?? campsResult.error ?? messagesResult.error,
+    );
+    return NextResponse.json({ error: "Could not load notifications." }, { status: 500 });
+  }
+  const postings = postingsResult.data;
+  const camps = campsResult.data;
+  const messages = messagesResult.data;
 
   for (const posting of postings ?? []) {
     const company = Array.isArray(posting.companies) ? posting.companies[0] : posting.companies;
@@ -82,6 +101,25 @@ export async function GET() {
       message: `Gentle reminder: your ${eventName.toLowerCase()} is coming up on ${camp.scheduled_date}.`,
       href: profile.role === "hr" ? `/company/postings/${camp.posting_id}` : "/college/camps",
       date: camp.scheduled_date,
+    });
+  }
+
+  for (const message of messages ?? []) {
+    const college = Array.isArray(message.colleges) ? message.colleges[0] : message.colleges;
+    const company = Array.isArray(message.companies) ? message.companies[0] : message.companies;
+    const senderName =
+      profile.role === "hr" ? college?.name ?? "a college" : company?.name ?? "a company";
+    const preview = message.body.length > 100 ? `${message.body.slice(0, 100)}…` : message.body;
+
+    notifications.push({
+      id: `message-${message.id}`,
+      type: "message",
+      title: `You have a message from ${senderName}`,
+      message: preview,
+      href: profile.role === "hr"
+        ? `/company/postings/${message.posting_id}`
+        : `/college/postings/${message.posting_id}`,
+      date: message.created_at,
     });
   }
 

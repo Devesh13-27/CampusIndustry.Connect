@@ -1,4 +1,4 @@
-export type NotificationType = "opening" | "camp" | "reminder";
+export type NotificationType = "opening" | "camp" | "reminder" | "message";
 
 export interface NotificationItem {
   id: string;

@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import FormField from "@/components/FormField";
@@ -8,6 +9,7 @@ import { saveProfile } from "./actions";
 import type { Profile } from "@/lib/types";
 
 export default function ProfileForm({ profile }: { profile: Profile }) {
+  const router = useRouter();
   const [photoPath, setPhotoPath] = useState(profile.profile_photo_path ?? "");
   const [resumePath, setResumePath] = useState(profile.resume_path ?? "");
   const [resumeError, setResumeError] = useState<string | null>(null);
@@ -84,6 +86,7 @@ export default function ProfileForm({ profile }: { profile: Profile }) {
       setFormError(result.error);
     } else {
       setSaved(true);
+      router.refresh();
     }
     setSaving(false);
   }
