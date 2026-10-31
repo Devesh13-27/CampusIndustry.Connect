@@ -35,6 +35,7 @@ create table profiles (
   full_name text not null,
   email text not null,
   role text not null check (role in ('hr', 'tp', 'admin')),
+  is_primary boolean not null default true,
   phone text,
   alternate_email text,
   profile_photo_path text,

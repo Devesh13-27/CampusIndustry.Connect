@@ -2,10 +2,23 @@ import { redirect } from "next/navigation";
 import { getCurrentProfile } from "@/lib/auth";
 import Nav from "@/components/Nav";
 import ProfileForm from "./ProfileForm";
+import OrganizationMembers from "./OrganizationMembers";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export default async function ProfilePage() {
   const profile = await getCurrentProfile();
   if (!profile) redirect("/login");
+
+  const supabase = createAdminClient();
+  const orgColumn = profile.role === "hr" ? "company_id" : profile.role === "tp" ? "college_id" : null;
+  const { data: members } = orgColumn
+    ? await supabase
+        .from("profiles")
+        .select("id, full_name, email, role, created_at")
+        .eq(orgColumn, profile[orgColumn])
+        .eq("is_primary", false)
+        .order("created_at", { ascending: true })
+    : { data: [] };
 
   return (
     <div>
@@ -18,6 +31,12 @@ export default async function ProfilePage() {
         </div>
         <div className="card p-5 sm:p-8">
           <ProfileForm profile={profile} />
+          {orgColumn && (
+            <OrganizationMembers
+              members={members ?? []}
+              canManage={profile.is_primary}
+            />
+          )}
         </div>
       </main>
     </div>

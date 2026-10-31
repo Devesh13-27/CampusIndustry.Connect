@@ -16,6 +16,9 @@ alter table profiles
   add column if not exists programs_branches text;
 
 alter table profiles
+  add column if not exists is_primary boolean not null default true;
+
+alter table profiles
   drop constraint if exists profiles_gender_check;
 
 alter table profiles

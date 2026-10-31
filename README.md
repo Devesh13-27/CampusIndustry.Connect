@@ -47,6 +47,10 @@ administrator management.
    Profiles include common contact details and role-specific information for HR
    and T&P officers. Profile photos are stored in the private `profile-photos`
    Supabase Storage bucket.
+   The primary HR or T&P account can add up to two assistant members from the
+   profile page. Assistants use the same organization and role, but cannot add
+   or remove organization members. The primary account provides each assistant
+   with a temporary password, which should be shared securely.
    Resumes are stored separately in the private `resumes` bucket. Admins can
    delete users, job openings, and uploaded resumes from `/admin`.
 

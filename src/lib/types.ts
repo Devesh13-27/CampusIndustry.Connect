@@ -9,6 +9,7 @@ export interface Profile {
   full_name: string;
   email: string;
   role: Role;
+  is_primary: boolean;
   phone: string | null;
   alternate_email: string | null;
   profile_photo_path: string | null;
