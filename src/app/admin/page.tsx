@@ -42,7 +42,7 @@ export default async function AdminPage() {
 
   return (
     <div>
-      <Nav orgName="Admin" links={[{ href: "/admin", label: "Verification queue" }]} />
+      <Nav orgName="Admin" role="admin" />
 
       <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-10">
         <div className="mb-8">

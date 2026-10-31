@@ -6,18 +6,36 @@ import { usePathname } from "next/navigation";
 import Image from "next/image";
 import LogoutButton from "./LogoutButton";
 import NotificationBell from "./NotificationBell";
+import type { Role } from "@/lib/types";
 
+type NavRole = Exclude<Role, "admin"> | "admin";
+
+const linksByRole: Record<NavRole, { href: string; label: string }[]> = {
+  hr: [
+    { href: "/company/dashboard", label: "Postings" },
+    { href: "/calendar", label: "Calendar" },
+    { href: "/profile", label: "My profile" },
+  ],
+  tp: [
+    { href: "/college/dashboard", label: "Job postings" },
+    { href: "/college/camps", label: "Recruitment activities" },
+    { href: "/calendar", label: "Calendar" },
+    { href: "/profile", label: "My profile" },
+  ],
+  admin: [{ href: "/admin", label: "Verification queue" }],
+};
 
 export default function Nav({
   orgName,
-  links,
+  role,
 }: {
   orgName: string;
-  links: { href: string; label: string }[];
+  role: NavRole;
 }) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuId = useId();
+  const links = linksByRole[role];
 
   const initial = orgName?.trim()?.[0]?.toUpperCase() ?? "?";
 

@@ -61,10 +61,7 @@ export default async function CollegePostingDetail({
     <div>
       <Nav
         orgName={college?.name ?? ""}
-        links={[
-          { href: "/college/dashboard", label: "Job Postings" },
-          { href: "/college/camps", label: "Recruitment Activities" },
-        ]}
+        role="tp"
       />
       <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6 sm:py-8">
         <Link

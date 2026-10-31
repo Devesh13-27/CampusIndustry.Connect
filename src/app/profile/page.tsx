@@ -9,7 +9,7 @@ export default async function ProfilePage() {
 
   return (
     <div>
-      <Nav orgName={profile.full_name} links={[{ href: "/profile", label: "My profile" }]} />
+      <Nav orgName={profile.full_name} role={profile.role} />
       <main className="mx-auto w-full max-w-3xl px-4 py-8 sm:px-6">
         <div className="mb-6">
           <p className="text-xs font-semibold uppercase tracking-wider text-blue-600">Account</p>

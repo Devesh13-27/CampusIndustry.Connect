@@ -35,7 +35,7 @@ export default async function CalendarPage() {
     <div>
       <Nav
         orgName={organization?.name ?? ""}
-        links={[{ href: profile.role === "hr" ? "/company/dashboard" : "/college/dashboard", label: "Dashboard" }, { href: "/calendar", label: "Calendar" }]}
+        role={profile.role}
       />
       <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8">
         <p className="text-xs font-semibold uppercase tracking-wider text-blue-600">Schedule</p>

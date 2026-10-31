@@ -45,12 +45,7 @@ export default async function CollegeDashboard() {
     <div>
       <Nav
         orgName={college?.name ?? ""}
-        links={[
-          { href: "/college/dashboard", label: "Job Postings" },
-          { href: "/college/camps", label: "Recruitment Activities" },
-          { href: "/calendar", label: "Calendar" },
-          { href: "/profile", label: "My profile" },
-        ]}
+        role="tp"
       />
       <div className="mx-auto w-full max-w-6xl px-4 py-5 sm:px-6 sm:py-8">
         {!!postings?.length && (

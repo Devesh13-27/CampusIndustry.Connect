@@ -35,11 +35,7 @@ export default async function CollegeCampsPage() {
     <div>
       <Nav
         orgName={college?.name ?? ""}
-        links={[
-          { href: "/college/dashboard", label: "Openings" },
-          { href: "/college/camps", label: "Camps & visits" },
-          { href: "/calendar", label: "Calendar" },
-        ]}
+        role="tp"
       />
       <div className="mx-auto max-w-3xl px-4 py-6 sm:px-6 sm:py-8">
         <h1 className="mb-6 text-xl font-semibold text-slate-900">
